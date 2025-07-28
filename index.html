@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Login Tech-Glass Intenso</title>
+      <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          --gold: #BA9D53;
+          --darkblue: #1B4582;
+          --lightblue: #D0DBE8;
+        }
+
+        html, body {
+          height: 100%;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          min-height: 100vh;
+          min-width: 100vw;
+          width: 100vw;
+          height: 100vh;
+          background: linear-gradient(120deg, #1B4582 0%, #0a2142 100%);
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        }
+
+        .scanlines {
+          pointer-events: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          z-index: 2;
+          background: repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.03) 0px,
+            rgba(255,255,255,0.03) 1px,
+            transparent 1px,
+            transparent 4px
+          );
+          mix-blend-mode: lighten;
+          opacity: 0.35;
+        }
+
+        #neural-network {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          z-index: 0;
+          opacity: 0.27;
+          pointer-events: none;
+        }
+
+        .centerer {
+          width: 100vw;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 10;
+        }
+
+        .login-container {
+          background: none !important;
+          border: none !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 420px;
+          min-height: 0;
+        }
+
+        .logo-top {
+          margin-bottom: 22px;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+        }
+
+        .logo-top img {
+          max-width: 300px; /* Aumentado de 130px a 200px para un logo más grande */
+          border-radius: 16px;
+          border: none;
+          box-shadow: none; /* Sin box-shadow para evitar interferencias */
+          position: relative;
+          z-index: 1;
+        }
+
+        .logo-shine {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%; /* Ajustado al tamaño exact1 del logo */
+          height: 100%;
+          pointer-events: none;
+          z-index: 2;
+          border-radius: 16px;
+          overflow: hidden;
+          mix-blend-mode: screen; /* Integra el brillo con el logo */
+        }
+
+        .logo-shine::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -80%; /* Comienza justo fuera del logo a la izquierda */
+          width: 80%; /* Brillo abarca solo la longitud del logo */
+          height: 100%;
+          background: linear-gradient(
+            90deg, /* Movimiento horizontal */
+            transparent 20%, /* Ajustado para un brillo más focalizado */
+            rgba(208, 219, 232, 0.1) 50%, /* Brillo visible */
+            transparent 80% /* Termina dentro del logo */
+          );
+          animation: logoShineAnim 5s ease-in-out infinite; /* Duración lenta */
+        }
+
+        @keyframes logoShineAnim {
+          0% {
+            left: -100%; /* Comienza fuera del logo a la izquierda */
+          }
+          50% {
+            left: 0%; /* Centro del logo */
+          }
+          100% {
+            left: 100%; /* Termina justo al borde derecho del logo */
+          }
+        }
+
+        @media (max-width: 530px) {
+          .logo-top img,
+          .logo-shine {
+            width: 140px !important; /* Tamaño ajustado para pantallas pequeñas */
+            height: auto; /* Mantiene proporciones */
+          }
+        }
+
+        .input-box {
+            position: relative;
+            margin: 23px 0;
+            width: 100%;
+            animation: fadeIn 1.6s;
+        }
+        .input-box input,
+        .login-btn {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .input-box input {
+            padding: 15px 15px 15px 50px;
+            background: rgba(27, 69, 130, 0.50);
+            border: none;
+            border-radius: 30px;
+            color: var(--lightblue);
+            font-size: 1.09em;
+            transition: box-shadow 0.38s, background 0.3s;
+            outline: none;
+            box-shadow: 0 4px 20px 0px var(--gold)22;
+            position: relative;
+            z-index: 1;
+        }
+        .input-box input:focus {
+            background: rgba(208, 219, 232, 0.14);
+            box-shadow: 0 0 20px 2px var(--lightblue)aa, 0 0 11px 2px var(--gold)88;
+            animation: borderGlow 1.3s linear infinite;
+        }
+        @keyframes borderGlow {
+            0% { box-shadow: 0 0 14px var(--lightblue)40, 0 0 13px var(--gold)30;}
+            45% { box-shadow: 0 0 18px var(--lightblue)dd, 0 0 20px var(--gold)66;}
+            100% { box-shadow: 0 0 14px var(--lightblue)40, 0 0 13px var(--gold)30;}
+        }
+        .input-box label {
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            transform: translateY(-50%);
+            font-size: 1em;
+            color: var(--lightblue);
+            pointer-events: none;
+            transition: 0.25s;
+            background: transparent;
+            border-radius: 20px;
+            padding: 0 5px;
+        }
+        .input-box input:focus ~ label,
+        .input-box input:valid ~ label {
+            top: -12px;
+            left: 45px;
+            font-size: 0.85em;
+            color: var(--gold);
+            background: rgba(27, 69, 130, 0.18);
+            padding: 1px 7px;
+            border-radius: 20px;
+            text-shadow: 0 0 8px var(--lightblue)cc;
+        }
+        .input-icon {
+            position: absolute;
+            left: 17px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            fill: var(--gold);
+            opacity: 0.92;
+            pointer-events: none;
+            transition: fill 0.3s;
+        }
+        .input-box input:focus ~ .input-icon {
+            fill: var(--lightblue);
+        }
+        .login-btn {
+            padding: 15px;
+            background: linear-gradient(90deg, var(--darkblue) 0%, var(--gold) 100%);
+            border: none;
+            border-radius: 30px;
+            font-size: 1.14em;
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: transform 0.16s, box-shadow 0.18s;
+            box-shadow: 0 0 22px var(--darkblue)55, 0 0 15px var(--gold)44 inset;
+            margin-top: 0;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .login-btn:hover {
+            transform: scale(1.040);
+            box-shadow: 0 0 28px var(--lightblue), 0 0 16px var(--gold) inset;
+        }
+        .login-btn::after {
+            content: "";
+            position: absolute;
+            left: -90%;
+            top: 0;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent 40%, var(--lightblue) 60%, transparent 100%);
+            opacity: 0.33;
+            transition: left 0.37s;
+            z-index: 1;
+        }
+        .login-btn:hover::after { left: 0; }
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            font-size: 0.92em;
+            width: 100%;
+            animation: fadeIn 2.1s;
+        }
+        .options a {
+            color: var(--gold);
+            text-decoration: none;
+            text-shadow: 0 0 8px var(--lightblue)88;
+            transition: color 0.2s;
+        }
+        .options a:hover {
+            color: var(--lightblue);
+            text-decoration: underline;
+        }
+        .version {
+            text-align: center;
+            margin-top: 19px;
+            font-size: 0.83em;
+            color: var(--lightblue);
+            text-shadow: 0 0 8px var(--gold)99;
+            animation: fadeIn 2.2s;
+        }
+        .logo-bottom {
+            position: absolute;
+            bottom: -45px;
+            left: 22px;
+            animation: fadeIn 1.8s;
+            filter: drop-shadow(0 0 12px var(--gold)cc);
+        }
+        .logo-bottom img {
+            max-width: 54px;
+            border-radius: 9px;
+            border: none;
+        }
+        #loader {
+            display: none;
+            position: fixed;
+            top:0; left:0;
+            width: 100vw; height: 100vh;
+            background: rgba(27, 69, 130, 0.89);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+        .neon-spinner {
+            border: 7px solid var(--gold);
+            border-top: 7px solid var(--lightblue);
+            border-radius: 50%;
+            width: 72px;
+            height: 72px;
+            animation: spin 1s linear infinite, glow 0.7s alternate infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes glow {
+            0%{ box-shadow:0 0 12px var(--gold), 0 0 17px var(--lightblue);}
+            100%{ box-shadow:0 0 21px var(--lightblue), 0 0 14px var(--gold);}
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px);}
+            100% { opacity: 1; transform: translateY(0);}
+        }
+        .particle-effect {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            background: linear-gradient(135deg, var(--gold) 30%, var(--lightblue) 90%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleBurst 0.5s cubic-bezier(0.1,1,0.7,1) forwards;
+            z-index: 4;
+            box-shadow: 0 0 15px var(--gold)bb, 0 0 7px var(--lightblue)bb;
+        }
+        @keyframes particleBurst {
+            0% { transform: scale(1) translate(0,0); opacity: 1;}
+            100% { transform: scale(0) translate(var(--dx, 0), var(--dy, 0)); opacity: 0;}
+        }
+        #welcome-message {
+            display: none;
+            position: fixed;
+            top: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(27, 69, 130, 0.94);
+            color: var(--lightblue);
+            padding: 16px 35px;
+            border-radius: 18px;
+            box-shadow: 0 0 17px var(--gold)77;
+            z-index: 1002;
+            font-size: 1.13em;
+            letter-spacing: 0.02em;
+            text-align: center;
+            animation: fadeIn 0.3s;
+            overflow: hidden;
+        }
+        .glitch {
+            position: relative;
+            color: var(--lightblue);
+            font-weight: bold;
+            animation: glitchSkew 1s infinite alternate;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-glitch);
+            position: absolute;
+            left: 0; top: 0; width: 100%; height: 100%;
+            opacity: 0.67;
+            pointer-events: none;
+        }
+        .glitch::before {
+            color: var(--gold);
+            animation: glitchAnim 1.2s infinite linear alternate-reverse;
+            z-index: 2;
+        }
+        .glitch::after {
+            color: #fff;
+            text-shadow: 2px 0 var(--gold), -2px 0 var(--lightblue);
+            animation: glitchAnim2 1.4s infinite linear alternate-reverse;
+            z-index: 1;
+        }
+        @keyframes glitchAnim {
+            0% { clip-path: inset(0 0 70% 0); transform: translate(-2px, -1px);}
+            20% { clip-path: inset(70% 0 0 0); transform: translate(1px, 1px);}
+            40% { clip-path: inset(0 0 80% 0); transform: translate(-1px, 2px);}
+            60% { clip-path: inset(80% 0 0 0); transform: translate(-2px, -2px);}
+            100% { clip-path: inset(0 0 0 0); transform: none;}
+        }
+        @keyframes glitchAnim2 {
+            0% { clip-path: inset(80% 0 0 0); transform: translate(1px, 2px);}
+            30% { clip-path: inset(0 0 80% 0); transform: translate(-2px, 1px);}
+            60% { clip-path: inset(70% 0 0 0); transform: translate(2px, -1px);}
+            100% { clip-path: inset(0 0 0 0); transform: none;}
+        }
+        @keyframes glitchSkew {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(1.5deg, -0.5deg);}
+            40% { transform: skew(-1deg, 0.5deg);}
+            60% { transform: skew(1deg, 1deg);}
+            80% { transform: skew(-0.5deg, -1.5deg);}
+            100% { transform: skew(0deg);}
+        }
+        @media (max-width: 530px){
+            .login-container { width: 98vw; }
+            .logo-bottom { left: 9px; }
+            #welcome-message { padding: 11px 2vw; font-size: 0.93em;}
+            .logo-shine, .logo-top img { width: 90px !important;}
+        }
+    </style>
+</head>
+<body>
+    <canvas id="neural-network"></canvas>
+    <div class="scanlines"></div>
+    <div id="loader">
+        <div class="neon-spinner"></div>
+    </div>
+    <div id="welcome-message">
+        <span class="glitch" data-glitch="Bienvenido, " id="glitch-welcome"></span>
+        <span id="user-name" class="glitch" data-glitch=""></span>
+        <span style="font-size:0.93em;color:var(--gold);display:block;margin-top:3px;">Cargando tu experiencia inteligente...</span>
+    </div>
+    <div class="centerer">
+        <div class="login-container">
+            <div class="logo-top">
+                <img src="https://raw.githubusercontent.com/lefpsga/sgaweb/refs/heads/master/img/logo_sgaw_white.png?token=GHSAT0AAAAAADHD2HSYKWJWEAYYG36YLDNW2EHNG4Q" alt="Logo SGAWEB">
+
+                <span class="logo-shine"></span>
+            </div>
+            <form autocomplete="off">
+                <div class="input-box">
+                    <input type="text" required id="user">
+                    <label>Usuario</label>
+                    <!-- Icono usuario -->
+                    <svg class="input-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><ellipse cx="12" cy="17" rx="7" ry="5"/></svg>
+                </div>
+                <div class="input-box">
+                    <input type="password" required>
+                    <label>Contraseña</label>
+                    <!-- Icono candado -->
+                    <svg class="input-icon" viewBox="0 0 24 24"><rect x="7" y="11" width="10" height="7" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+                </div>
+                <div class="input-box">
+                    <input type="text" required>
+                    <label>Serial</label>
+                    <!-- Icono chip -->
+                    <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="2"/><path d="M6 8V6m12 2V6M6 16v2m12-2v2M9 12h6"/></svg>
+                </div>
+                <div class="input-box">
+                    <button type="submit" class="login-btn">Iniciar Sesión</button>
+                </div>
+                <div class="options">
+                    <a href="#">Olvidé mi clave</a>
+                    <a href="#">Cambiar clave</a>
+                </div>
+                <div class="version">Versión 2.1.2025.r001</div>
+            </form>          
+        </div>
+    </div>
+    <script>
+        // Red neuronal animada (canvas) - INTENSIDAD ALTA
+        const canvas = document.getElementById('neural-network');
+        const ctx = canvas.getContext('2d');
+        let W = window.innerWidth, H = window.innerHeight;
+        canvas.width = W;
+        canvas.height = H;
+        let nodes = [];
+        const numNodes = 44, maxDistance = 130;
+        class Node {
+            constructor() {
+                this.x = Math.random() * W;
+                this.y = Math.random() * H;
+                this.vx = (Math.random() - 0.5) * 1.06;
+                this.vy = (Math.random() - 0.5) * 1.06;
+                this.radius = Math.random() * 2 + 2.6;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = Math.random() > 0.5 ? "#D0DBE8" : "#BA9D53";
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.shadowBlur = 28; // MÁS BLUR
+                ctx.globalAlpha = 0.95; // MÁS OPACO/NEÓN
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+                ctx.shadowBlur = 0;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > W) this.vx *= -1;
+                if (this.y < 0 || this.y > H) this.vy *= -1;
+            }
+        }
+        for (let i = 0; i < numNodes; i++) nodes.push(new Node());
+        function animate() {
+            ctx.clearRect(0,0,W,H);
+            for (const node of nodes) {
+                node.update();
+                node.draw();
+                for (const otherNode of nodes) {
+                    if (node !== otherNode) {
+                        const dx = node.x - otherNode.x, dy = node.y - otherNode.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < maxDistance) {
+                            ctx.beginPath();
+                            ctx.moveTo(node.x, node.y);
+                            ctx.lineTo(otherNode.x, otherNode.y);
+                            ctx.strokeStyle = `rgba(186,157,83,${0.40 + (1 - dist/maxDistance)*0.30})`; // MÁS OPACIDAD
+                            if (Math.random()>0.7)
+                                ctx.strokeStyle = `rgba(208,219,232,${0.22 + (1 - dist/maxDistance)*0.28})`;
+                            ctx.lineWidth = 1.7; // MÁS GRUESO
+                            ctx.shadowColor = ctx.strokeStyle.includes('186,157,83') ? "#BA9D53" : "#D0DBE8";
+                            ctx.shadowBlur = 12; // MÁS BLUR
+                            ctx.globalAlpha = 0.98;
+                            ctx.stroke();
+                            ctx.globalAlpha = 1.0;
+                            ctx.shadowBlur = 0;
+                        }
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+        window.addEventListener('resize', () => {
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = W; canvas.height = H;
+        });
+
+        // Partículas botón login
+        const loginBtn = document.querySelector('.login-btn');
+        loginBtn.addEventListener('click', (e) => {
+            document.getElementById('login-sound').play();
+            const rect = loginBtn.getBoundingClientRect();
+            const x = e.clientX - rect.left, y = e.clientY - rect.top;
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle-effect');
+                const angle = Math.random() * 2 * Math.PI;
+                const dx = Math.cos(angle) * (24 + Math.random() * 33);
+                const dy = Math.sin(angle) * (24 + Math.random() * 33);
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.setProperty('--dx', dx+'px');
+                particle.style.setProperty('--dy', dy+'px');
+                loginBtn.appendChild(particle);
+                setTimeout(() => { particle.remove(); }, 500);
+            }
+        });
+
+        // Loader y Mensaje de Bienvenida Glitch
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+            document.getElementById('loader').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                // Mensaje IA Glitch
+                const user = document.getElementById('user').value || 'usuario';
+                document.getElementById('user-name').textContent = user + " 👾";
+                document.getElementById('user-name').setAttribute('data-glitch', user + " 👾");
+                document.getElementById('glitch-welcome').setAttribute('data-glitch', "Bienvenido, ");
+                document.getElementById('glitch-welcome').textContent = "Bienvenido, ";
+                const welcome = document.getElementById('welcome-message');
+                welcome.style.display = 'block';
+                setTimeout(() => { welcome.style.display = 'none'; }, 2000);
+            }, 1500);
+        });
+
+        // Microinteracción border cuando input tiene texto
+        document.querySelectorAll('.input-box input').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.length > 1) {
+                    this.style.boxShadow = "0 0 20px 2px #D0DBE8AA, 0 0 11px 2px #BA9D5388";
+                } else {
+                    this.style.boxShadow = "0 4px 20px 0px #BA9D5322";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
